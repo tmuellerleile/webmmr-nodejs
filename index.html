@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+
+    <title>node.js</title>
+
+    <meta name="description" content="Stand up presentation on node.js for #wmmr">
+    <meta name="author" content="Tobias Muellerleile">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="lib/revealjs/css/reveal.min.css">
+    <link rel="stylesheet" href="css/theme/muellerleile.net.css" id="theme">
+
+    <link rel="stylesheet" href="lib/revealjs/lib/css/zenburn.css">
+
+    <!-- If the query includes 'print-pdf', use the PDF print sheet -->
+    <script>
+        document.write( '<link rel="stylesheet" href="lib/revealjs/css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="lib/revealjs/lib/js/html5shiv.js"></script>
+    <![endif]-->
+
+    <style>
+      #chat {
+        font-size: 80%;
+        font-family: "Source Code Pro";
+        text-align: left;
+        overflow: scroll;
+        height: 500px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+
+        <section>
+          <h1>node.js</h1>
+          <h3>Eine Einführung</h3>
+        </section>
+
+        <section><!-- Was ist node.js? -->
+          <section>
+            <h2>Was ist node.js?</h2>
+            <ul>
+              <li class="fragment"><q>serverseitiges JavaScript</q></li>
+              <li class="fragment"><q>eine Lösung für das <a href="http://www.kegel.com/c10k.html">C10K-Problem</a></q></li>
+              <li class="fragment"><q>der Nachfolger von PHP|RoR|.*</q></li>
+
+            </ul>
+          </section>
+          <section>
+            <h2>Exkurs: C10K</h2>
+            <ul>
+              <li class="fragment">Wie arbeitet ein HTTP-Server Client-Requests ab?<br />
+              <span class="fragment">&rarr; Traditionell (Apache/mpm_prefork): Viele, viele Unterprozesse</span></li>
+              <li class="fragment">Was passiert bei 10.000+ (= „10K“) simultanen Anfragen?<br />
+              <span class="fragment">&rarr; Speicherverbrauch und Prozessmanagement-Overhead explodieren</span></li>
+            </ul>
+          </section>
+          <section>
+            <h2>Exkurs: C10K</h2>
+            <ul>
+              <li class="fragment">Alternativer Ansatz: Event Loops (nginx, lighttpd, Apache/mpm_event, <em>node.js</em>)</li>
+              <li class="fragment">Zentraler Vorteil: Moderate Steigerung in Speicherverbrauch und CPU-Last</li>
+            </ul>
+          </section>
+          <section>
+            <h2><strong>W</strong>elt<strong>w</strong>eites <strong>W</strong>arten</h2>
+            <p class="fragment">‚Moderne‘ Webanwendungen warten auf</p>
+            <ul>
+              <li class="fragment">Datenbanken</li>
+              <li class="fragment">Dateisysteme</li>
+              <li class="fragment">externe Services</li>
+              <li class="fragment">User-Interaktion</li>
+            </ul>
+          </section>
+          <section>
+            <h2>Events in node.js</h2>
+            <p>Grundidee:</p>
+            <ul>
+              <li class="fragment">Frage Datenbank X</li>
+              <li class="fragment">... (Mach‘ irgendetwas anderes) ...</li>
+              <li class="fragment"><em>Wenn</em> das Ergebnis der Abfrage <em>feststeht</em>, verarbeite es weiter</li>
+            </ul>
+          </section>
+          <section>
+            <h2>Was also ist node.js?</h2>
+            <ul>
+              <li class="fragment">ein event-basiertes Framework für die Erstellung hochperformanter Server-Anwendungen (HTTP/TCP/UDP)</li>
+              <li class="fragment">JavaScript-basierte API</li>
+              <li class="fragment">plattformunabhängig (*n*x, Win) durch Googles <a href="https://code.google.com/p/v8/">V8</a> + eigene Library libuv</li>
+              <li class="fragment">im weiteren Sinne: ein Ökosystem von Modulen rund um den node.js-Kern</li>
+            </ul>
+          </section>
+          <section>
+            <h2>Geschichte</h2>
+            <ul>
+              <li class="fragment">‚erfunden‘ 2009 von Ryan Dahl</li>
+              <li class="fragment">Aktueller Maintainer: Isaac Z. Schlueter</li>
+              <li class="fragment">Open Source unter dem Dach (und der Kontrolle) von <a href="http://joyent.com">Joyent</a></li>
+              <li class="fragment">Aktuelle Version 0.10.4 – noch nicht 1.0 aber hinreichend stabil</li>
+            </ul>
+          </section>
+        </section>
+
+        <section><!-- Anwendungsbereiche, Vorteile -->
+          <section>
+            <h2>Einsatzgebiet</h2>
+            <ul>
+              <li class="fragment">leichtgewichtige Serveranwendungen mit Echtzeit-Anforderungen</li>
+              <li class="fragment">eher für APIs als für ‚vollgewichtige‘ Applikationen</li>
+              <li class="fragment">durchaus auch für Prototyping</li>
+              <li class="fragment">„Faustregel“:
+                <ul>
+                  <li>I/O bound &rarr; JA</li>
+                  <li>CPU bound &rarr; NEIN</li>
+                </ul>
+              </li>
+            </ul>
+          </section>
+          <section>
+            <h2>Warum node.js?</h2>
+            <ul>
+              <li class="fragment">JS-Kenntnisse aus der Frontend-Programmierung können für den Backend-Bereich wiederverwendet werden &rarr; <q>write once, run everywhere</q></li>
+              <li class="fragment">Performance:
+                <ul>
+                  <li class="fragment">JS als Gewinner der neuen ‚Browser wars‘</li>
+                  <li class="fragment">JSON als <em>das</em> Austauschformat</li>
+                </ul>
+              </li>
+            </ul>
+          </section>
+        </section>
+
+        <section><!-- Praxis: Webchat -->
+          <section>
+            <h2>Praxis</h2>
+            <p>ein Webchat basierend auf WebSockets</p>
+            <p>ACHTUNG: Nicht zu Hause verwenden!<br /> (Sicherheit, Barrierefreiheit, Fehlerbehandlung...)</p>
+          </section>
+
+          <section>
+            <h3>Server:</h3>
+            <pre><code>
+var io = require('socket.io').listen(8080);
+
+io.sockets.on('connection', function (socket) {
+  socket.on('msg', function (data) {
+    io.sockets.emit('msg', data);
+  });
+});
+            </code></pre>
+          </section>
+
+          <section>
+            <h3>Client:</h3>
+            <pre><code style="font-size: 80%; max-height: 550px">
+&lt;html&gt;
+  &lt;body&gt;
+    &lt;div id="chat"&gt;&lt;/div&gt;
+    &lt;form&gt;
+      &lt;input id="nick" /&gt;: &lt;input id="msg" /&gt;
+    &lt;/form&gt;
+    &lt;script src="socket.io.js"&gt;&lt;/script&gt;
+    &lt;script&gt;
+      var socket = io.connect('http://localhost:8080');
+      socket.on('msg', function (data) {
+        $('#chat').append('&lt;p&gt;&lt;strong&gt;' + data.nick + '&lt;/strong&gt; ' +
+          data.msg + '&lt;/p&gt;');
+      });
+      $('#msg').keydown(function(event) {
+        if (event.which == '13') {
+          event.preventDefault();
+          socket.emit('msg', { nick: $('#nick').val(), msg: $('#msg').val() });
+          $('#msg').val('');
+        }
+      });
+    &lt;/script&gt;
+  &lt;body&gt;
+&lt;html&gt;
+            </code></pre>
+          </section>
+
+          <section>
+            <h2>Demo</h2>
+            <div id="chat"></div>
+          </section>
+        </section>
+
+        <section><!-- Und jetzt? -->
+          <h2>Und jetzt?</h2>
+          <ul>
+            <li class="fragment">Binaries und Source Code unter <a title="node.js-Downloads" href="http://nodejs.org/download">nodejs.org/download</a></li>
+            <li class="fragment">Dokumentation unter <a title="node.js-Dokumentations-Website" href="http://nodejs.org/api">nodejs.org/api</a></li>
+            <li class="fragment">Module via <a title="npm-Website" href="https://npmjs.org">npm</a></li>
+            <li class="fragment">Tutorials:
+              <ul>
+                <li><a title="heise developer" href="http://www.heise.de/developer">heise developer</a></li>
+                <li><a href="http://book.mixu.net/index.html" title="Mixu's Node book"><em>Mixu's Node book</em></a></li>
+                <li><a title="How to node" href="http://howtonode.org/">HowToNode.org</a></li>
+              </ul>
+          </ul>
+        </section>
+
+        <section data-state="lastslide">
+          <h2>Fragen?</h2>
+          <p>
+            <a title="@tmuellerleile" href="https://twitter.com/tmuellerleile" title="Kontakt: Tobias Müllerleile">@tmuellerleile</a>
+          </p>
+        </section>
+      </div>
+    </div>
+
+    <div id="fork-me-on-github" style="position: absolute; top: 0; right: 0; display: none;"><a href="https://github.com/tmuellerleile/webmmr-nodejs"><img style="border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a></div>
+
+    <script src="lib/revealjs/lib/js/head.min.js"></script>
+    <script src="lib/revealjs/js/reveal.min.js"></script>
+
+    <script>
+      Reveal.initialize({
+        controls: false,
+        progress: true,
+        history: true,
+        transition: 'linear',
+        rollingLinks: false,
+
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+          { src: 'lib/revealjs/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'lib/revealjs/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'lib/revealjs/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+          { src: 'lib/revealjs/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } },
+          { src: 'node_modules/socket.io/node_modules/socket.io-client/dist/socket.io.js', async: true, callback: function() {
+            var chatSocket = io.connect('http://localhost:8080');
+            var chat = document.getElementById('chat');
+            chatSocket.on('msg', function (data) {
+              chat.innerHTML += '<p><strong>' + data.nick + '</strong> ' + data.msg + '</p>';
+              chat.scrollTop = chat.scrollHeight;
+            });
+          }},
+        ]
+        });
+
+        Reveal.addEventListener('lastslide', function (event) {
+          document.getElementById("fork-me-on-github").style.display = 'block';
+        });
+    </script>
+  </body>
+</html>

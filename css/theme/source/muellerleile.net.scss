@@ -1,0 +1,63 @@
+/**
+ * muellerleile.net theme for reveal.js
+ */
+
+@font-face {
+	font-family:Miso;
+	src:url('../../fnt/miso.otf') format("opentype");
+}
+
+// Default mixins and settings -----------------
+@import "lib/revealjs/css/theme/template/mixins";
+@import "lib/revealjs/css/theme/template/settings";
+// ---------------------------------------------
+
+// Override theme settings (see ../template/settings.scss)
+$mainFont: 'Open Sans', sans-serif;
+$mainColor: #333;
+$headingFont: 'Miso', sans-serif;
+$headingColor: #333;
+$headingLetterSpacing: -0.08em;
+$headingTextShadow: none;
+$backgroundColor: #f7fbfc;
+$linkColor: #3b759e;
+$linkColorHover: lighten( $linkColor, 20% );
+$selectionBackgroundColor: #134674;
+
+// Background generator
+@mixin bodyBackground() {
+	background-image: url('../../img/stripes.png');
+}
+
+
+// Theme template ------------------------------
+@import "lib/revealjs/css/theme/template/theme";
+// ---------------------------------------------
+
+.reveal h1, .reveal h2, .reveal h3 {
+    letter-spacing: -0.04em;
+}
+
+.reveal li {
+    margin: 0.5em 0;
+}
+
+.reveal pre code {
+    padding: 0 1em 1em 1em;
+    border-radius: 8px;
+}
+
+.reveal pre {
+    border-radius: 8px;
+}
+
+pre .xml .javascript {
+    opacity: 1 !important;
+}
+
+.reveal q::before {
+    content: '„';
+}
+.reveal q::after {
+    content: '“';
+}
